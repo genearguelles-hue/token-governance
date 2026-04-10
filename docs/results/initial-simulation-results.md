@@ -2,25 +2,25 @@
 
 **Repository:** Token Governance  
 **Document type:** Results note / simulation brief  
-**Status:** Draft v0.1
+**Status:** Draft v0.2
 
 ## 1. Purpose
 
-This document presents the first archived simulation results for **Token Governance** as an operational extension of **Persona Engineering**. The purpose of the initial batch was to test the central claim that token cost is better understood as a property of **interaction structure over time** than as a simple function of model pricing, prompt length, or isolated responses. Under this view, a governed AI system should reduce cumulative token burn by constraining context growth, output inflation, unnecessary tool expansion, and repair loops across long-horizon interaction trajectories. fileciteturn3file0
+This document presents the first archived simulation results for **Token Governance** as an operational extension of **Persona Engineering**. The purpose of the initial batch was to test the central claim that token cost is better understood as a property of **interaction structure over time** than as a simple function of model pricing, prompt length, or isolated responses. Under this view, a governed AI system should reduce cumulative token burn by constraining context growth, output inflation, unnecessary tool expansion, and repair loops across long-horizon interaction trajectories.
 
 The simulation framework treats governance as a persona-level control system built from:
 
 - **persona axioms** as invariant constraints
 - **persona primitives** as trajectory constraints
-- **engram schemas** as structured state-compression mechanisms. fileciteturn3file1
+- **engram schemas** as structured state-compression mechanisms
 
 ## 2. Conceptual basis
 
 The initial simulation batch was grounded in two companion ideas.
 
-First, **Persona Engineering** defines persona as a formal object composed of engrams, primitives, and axioms, with governance embedded into the identity of the interactional system itself rather than added as an external policy layer. Personas are designed to constrain valid interaction trajectories over time, preserve coherence across contexts, and bound adaptation without identity erosion. fileciteturn3file1
+First, **Persona Engineering** defines persona as a formal object composed of engrams, primitives, and axioms, with governance embedded into the identity of the interactional system itself rather than added as an external policy layer. Personas are designed to constrain valid interaction trajectories over time, preserve coherence across contexts, and bound adaptation without identity erosion.
 
-Second, **Token Governance** extends that framework into cost systems and argues that token consumption is an emergent property of recursive interaction dynamics. In sustained workflows, token cost is driven primarily by context carry-forward, redundant and stale state, verbose outputs that inflate future turns, and tool-mediated expansion of interaction state. Governed systems reduce these costs by imposing persona-level constraints on what enters context, how state is represented, when detail is disclosed, and when tools are invoked. fileciteturn3file0
+Second, **Token Governance** extends that framework into cost systems and argues that token consumption is an emergent property of recursive interaction dynamics. In sustained workflows, token cost is driven primarily by context carry-forward, redundant and stale state, verbose outputs that inflate future turns, and tool-mediated expansion of interaction state. Governed systems reduce these costs by imposing persona-level constraints on what enters context, how state is represented, when detail is disclosed, and when tools are invoked.
 
 ## 3. Simulation design
 
@@ -34,14 +34,34 @@ The ungoverned condition modeled a system with:
 - no structured state compression
 - loose output discipline
 - weak tool-invocation thresholds
-- higher rates of repair loops and re-briefing. fileciteturn3file0
+- higher rates of repair loops and re-briefing
 
 ### Condition B: Persona-governed interaction
 The governed condition modeled a system with:
 
 - persona axioms enforcing context minimality, non-repetition of stable state, output sufficiency, and tool thresholds
 - persona primitives enforcing narrow-context-first interpretation, concise-by-default output, progressive disclosure, and continuity awareness
-- engram-schema-style state compression replacing raw conversational residue with compact retained state. fileciteturn3file0 fileciteturn3file1
+- engram-schema-style state compression replacing raw conversational residue with compact retained state
+
+### Simple causal model
+
+#### Ungoverned
+At each turn:
+- higher probability of ambiguity
+- higher probability of persona inconsistency
+- higher probability of drift
+- therefore higher probability of repair loop
+- repair loop increases future context size
+- larger context increases future token burn
+
+#### Governed
+At each turn:
+- small governance overhead
+- lower ambiguity rate
+- lower inconsistency rate
+- lower drift rate
+- fewer repair loops
+- less context inflation over time
 
 ### Scenarios tested
 
@@ -49,7 +69,7 @@ The governed condition modeled a system with:
 2. **Long-horizon workflow collaboration**
 3. **Nonlinear human-centered mission**
 
-These scenarios were chosen because the theoretical framework predicts that governance effects should grow stronger as interaction becomes more sustained, context-dependent, and human-centered. fileciteturn3file1
+These scenarios were chosen because the theoretical framework predicts that governance effects should grow stronger as interaction becomes more sustained, context-dependent, and human-centered.
 
 ## 4. Archived first-batch results
 
@@ -69,30 +89,113 @@ The pattern is directionally consistent with the Token Governance thesis.
 - In the **long-horizon workflow** case, governance produces materially larger savings as context carry-forward and repeated coordination costs begin to dominate.
 - In the **nonlinear human-centered** case, governance yields the largest reduction, consistent with the expectation that ambiguity, continuity demands, and repair-loop risk increase sharply when missions are open-ended and sustained.
 
-This pattern supports the broader claim that governance has the greatest cost impact when systems operate in exactly the settings for which Persona Engineering was proposed: long-horizon, nonlinear, human-centered interaction. fileciteturn3file1
+This pattern supports the broader claim that governance has the greatest cost impact when systems operate in exactly the settings for which Persona Engineering was proposed: long-horizon, nonlinear, human-centered interaction.
 
-## 5. What the initial results suggest
+## 5. Figures and linked outputs
+
+The first batch generated comparison tables, summary tables, attribution tables, and charts. In the repository, this note should link to the archived outputs below.
+
+### Core output tables
+- `simulation/outputs/simulation_compare.csv`
+- `simulation/outputs/simulation_summary.csv`
+- `simulation/outputs/simulation_attribution.csv`
+- `simulation/outputs/paper_benchmark_anchor.csv`
+
+### Recommended figure links
+- `simulation/outputs/chart_tokens_per_task.png`
+- `simulation/outputs/chart_reduction_pct.png`
+- `simulation/outputs/chart_turn_growth_workflow.png`
+- `simulation/outputs/chart_turn_growth_humancentered.png`
+- `simulation/outputs/chart_attribution.png`
+
+### Suggested inline figure block for the repo version
+
+When this note is placed in the repository, the following markdown image links can be added if the files exist at these paths:
+
+```md
+![Average token burn per task](../../simulation/outputs/chart_tokens_per_task.png)
+
+![Percent reduction from governance](../../simulation/outputs/chart_reduction_pct.png)
+
+![Turn-level token growth: long-horizon workflow](../../simulation/outputs/chart_turn_growth_workflow.png)
+
+![Turn-level token growth: nonlinear human-centered](../../simulation/outputs/chart_turn_growth_humancentered.png)
+
+![Attribution of governed savings](../../simulation/outputs/chart_attribution.png)
+```
+
+### Suggested narrative around figures
+
+- **Average token burn per task** should be used as the headline visual because it gives the clearest governed vs. ungoverned comparison across scenarios.
+- **Percent reduction from governance** should sit near the summary table because it makes the directional result immediately legible.
+- **Turn-level growth charts** are especially important because they visualize the core claim that governed systems bound state growth more effectively over time.
+- **Attribution of savings** helps distinguish context/state governance from mere output shortening.
+
+## 6. What the initial results suggest
 
 The first batch does **not** prove a precise universal savings percentage. It does establish an initial modeled result:
 
 > **Persona-governed interaction appears to reduce token burn most strongly when interaction state would otherwise compound over time.**
 
-This is consistent with the Token Governance argument that cost is dominated by persistent state rather than isolated output volume, and that governance acts by bounding interaction trajectories rather than merely trimming individual responses. fileciteturn3file0
+This is consistent with the Token Governance argument that cost is dominated by persistent state rather than isolated output volume, and that governance acts by bounding interaction trajectories rather than merely trimming individual responses.
 
 The initial batch therefore supports four early conclusions:
 
 1. **Governed systems reduce total token burn across all three scenarios.**
 2. **The governance advantage increases with interaction horizon and contextual complexity.**
 3. **The largest gains likely come from state and context discipline rather than output shortening alone.**
-4. **Token efficiency behaves as a structural property of the interactional system, not a local prompt-optimization effect.** fileciteturn3file0
+4. **Token efficiency behaves as a structural property of the interactional system, not a local prompt-optimization effect.**
 
-## 6. Relationship to the deterministic benchmark
+## 7. Relationship to the deterministic benchmark
 
-The Token Governance white paper includes a benchmark-style comparative model in which a representative ungoverned system consumes **39.9 million tokens/month** and a governed system consumes **15.9 million tokens/month**, implying roughly **24 million tokens** saved, or about **60%** reduction under the paper's illustrative assumptions. fileciteturn3file0
+The Token Governance white paper includes a benchmark-style comparative model in which a representative ungoverned system consumes **39.9 million tokens/month** and a governed system consumes **15.9 million tokens/month**, implying roughly **24 million tokens** saved, or about **60%** reduction under the paper's illustrative assumptions.
 
 The archived first-batch simulation results are broadly directionally aligned with that benchmark, especially in the higher-complexity scenarios. However, the first Monte Carlo batch should be treated as an **initial exploratory model**, not as a final calibrated estimate. Some scenario results may overstate or understate eventual real-world savings until the stochastic assumptions are tuned more carefully against benchmark assumptions and, later, observed usage traces.
 
-## 7. Limitations of the first batch
+## 8. Reproducibility
+
+This project now includes a runnable simulation script and dependency list so the first batch can be regenerated locally.
+
+### Primary script
+- `simulation/src/persona_token_governance_monte_carlo.py`
+
+### Dependency file
+- `requirements.txt`
+
+### Example setup
+
+Create or activate a Python environment, then install dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### Example run command
+
+From the repository root:
+
+```bash
+python simulation/src/persona_token_governance_monte_carlo.py --seed 42 --trials 4000 --outdir simulation/outputs
+```
+
+### Expected output artifacts
+
+A successful run should generate artifacts such as:
+
+- `simulation_summary.csv`
+- `simulation_compare.csv`
+- `simulation_attribution.csv`
+- chart image files in `simulation/outputs/`
+- `paper_benchmark_anchor.csv`
+- `README.md` in the output folder
+
+### Reproducibility notes
+
+- The script supports **RNG seed control** to make runs repeatable.
+- The current archived first batch used a seeded Monte Carlo configuration.
+- Exact numerical outputs may still shift across future versions if assumptions are recalibrated, scenarios are expanded, or attribution logic is refined.
+
+## 9. Limitations of the first batch
 
 The current results should be interpreted as **foundational and illustrative**, not final.
 
@@ -103,9 +206,9 @@ The current results should be interpreted as **foundational and illustrative**, 
 - The attribution of savings across context, output, tool usage, and turn reduction needs a tighter calibration pass.
 - The model currently demonstrates structural plausibility more strongly than production-grade forecasting accuracy.
 
-These limitations do not invalidate the first results. They define the scope of what this first batch is meant to accomplish: an initial demonstration that the Token Governance framework is operationalizable and produces measurable modeled differences between governed and ungoverned interaction. fileciteturn3file0
+These limitations do not invalidate the first results. They define the scope of what this first batch is meant to accomplish: an initial demonstration that the Token Governance framework is operationalizable and produces measurable modeled differences between governed and ungoverned interaction.
 
-## 8. Next steps
+## 10. Next steps
 
 The next phase of work should expand and tighten the simulation program in a disciplined sequence.
 
@@ -113,7 +216,7 @@ The next phase of work should expand and tighten the simulation program in a dis
 
 1. **Calibration batch**
    - tune stochastic assumptions against the paper benchmark
-   - align scenario parameters more tightly with the deterministic anchor. fileciteturn3file0
+   - align scenario parameters more tightly with the deterministic anchor
 
 2. **Sensitivity analysis**
    - vary context carry-forward, verbosity, tool thresholds, repair-loop rates, and compression strength
@@ -132,12 +235,12 @@ The next phase of work should expand and tighten the simulation program in a dis
 5. **Future empirical validation**
    - compare modeled trajectories to real interaction traces where available
 
-## 9. Working conclusion
+## 11. Working conclusion
 
 The first archived simulation batch provides an initial operational demonstration of the Token Governance thesis:
 
 - **ungoverned systems** tend toward compounding interaction-state growth
-- **persona-governed systems** constrain context, bound trajectory evolution, and reduce cumulative token burn over time. fileciteturn3file0 fileciteturn3file1
+- **persona-governed systems** constrain context, bound trajectory evolution, and reduce cumulative token burn over time
 
 At this stage, the most defensible claim is not that governance guarantees a fixed savings rate in all settings. The defensible claim is that the framework already shows a coherent and measurable pattern: **governance matters more as interaction becomes longer, more stateful, and more human-centered.**
 
@@ -152,13 +255,3 @@ Recommended path:
 ```text
 docs/results/initial-simulation-results.md
 ```
-
-## Suggested companion assets
-
-Place these alongside or reference them from this note:
-
-- `simulation/outputs/simulation_compare.csv`
-- `simulation/outputs/simulation_summary.csv`
-- `simulation/outputs/simulation_attribution.csv`
-- comparison charts from the first batch
-- benchmark anchor export
