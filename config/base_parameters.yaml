@@ -1,0 +1,100 @@
+metadata:
+  label: base_parameters
+  description: Base parameter state extracted from the current embedded Token Governance simulation model
+  created_from: simulation/src/persona_token_governance_monte_carlo.py
+  notes: >
+    This file captures the current script-embedded baseline parameter state prior to
+    config-driven calibration batches.
+
+run:
+  seed: 42
+  trials: 4000
+  outdir: simulation/outputs/base_parameters_reference
+
+scenarios:
+  short_horizon_determinate:
+    name: short_horizon_determinate
+    base_turns: 6
+    new_input_mean: 360
+    new_input_sd: 45
+    base_output_mean: 260
+    base_output_sd: 40
+    tool_need_prob: 0.12
+    repair_prob: 0.16
+    repeat_state_prob: 0.10
+    stale_retention_prob: 0.08
+    excess_context_prob: 0.12
+    verbosity_prob: 0.18
+    rebrief_prob: 0.05
+    session_base_state: 180
+    relevant_carry_forward: 120
+
+  long_horizon_workflow:
+    name: long_horizon_workflow
+    base_turns: 13
+    new_input_mean: 620
+    new_input_sd: 85
+    base_output_mean: 430
+    base_output_sd: 70
+    tool_need_prob: 0.32
+    repair_prob: 0.28
+    repeat_state_prob: 0.38
+    stale_retention_prob: 0.26
+    excess_context_prob: 0.33
+    verbosity_prob: 0.34
+    rebrief_prob: 0.24
+    session_base_state: 520
+    relevant_carry_forward: 240
+
+  nonlinear_human_centered:
+    name: nonlinear_human_centered
+    base_turns: 15
+    new_input_mean: 700
+    new_input_sd: 110
+    base_output_mean: 520
+    base_output_sd: 95
+    tool_need_prob: 0.26
+    repair_prob: 0.34
+    repeat_state_prob: 0.42
+    stale_retention_prob: 0.32
+    excess_context_prob: 0.39
+    verbosity_prob: 0.41
+    rebrief_prob: 0.31
+    session_base_state: 640
+    relevant_carry_forward: 300
+
+governance:
+  ungoverned:
+    label: ungoverned
+    governance_overhead_mean: 0.0
+    governance_overhead_sd: 0.0
+    context_filter_strength: 0.0
+    repeat_block_strength: 0.0
+    stale_prune_strength: 0.0
+    compression_strength: 0.0
+    output_bound_strength: 0.0
+    progressive_disclosure_strength: 0.0
+    tool_threshold_strength: 0.0
+    tool_token_reduction: 0.0
+    repair_reduction_strength: 0.0
+    rebrief_reduction_strength: 0.0
+    turn_efficiency_bonus: 0.0
+
+  governed:
+    label: governed
+    governance_overhead_mean: 36.0
+    governance_overhead_sd: 6.0
+    context_filter_strength: 0.52
+    repeat_block_strength: 0.56
+    stale_prune_strength: 0.58
+    compression_strength: 0.44
+    output_bound_strength: 0.34
+    progressive_disclosure_strength: 0.22
+    tool_threshold_strength: 0.47
+    tool_token_reduction: 0.38
+    repair_reduction_strength: 0.48
+    rebrief_reduction_strength: 0.54
+    turn_efficiency_bonus: 0.16
+
+overrides:
+  notes: "No overrides applied. This is the extracted base parameter state."
