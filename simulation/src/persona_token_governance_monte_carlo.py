@@ -10,32 +10,29 @@ What it includes:
 - parameter definitions
 - RNG seed control
 - scenario configs
+- optional YAML config loading and override merging
 - Monte Carlo loop
 - output table generation
 - chart generation
 
-The model is intentionally structural rather than implementation-specific:
-it treats token burn as a function of evolving interaction state, especially
-context carry-forward, output feedback, tool expansion, repair loops, and
-governance constraints.
-
 Usage:
     python persona_token_governance_monte_carlo.py
-
-Optional CLI:
-    python persona_token_governance_monte_carlo.py --seed 42 --trials 5000 --outdir sim_outputs
+    python persona_token_governance_monte_carlo.py --config config/base_parameters.yaml
+    python persona_token_governance_monte_carlo.py --config config/base_parameters.yaml --override config/calibration_batch_03.yaml
 """
 
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass, asdict
+from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import yaml
 
 
 # ---------------------------
@@ -64,31 +61,26 @@ class Scenario:
 @dataclass(frozen=True)
 class GovernanceConfig:
     label: str
-    # Governance overhead paid each turn for filtering / compression / validation
     governance_overhead_mean: float
     governance_overhead_sd: float
-    # Context admission / carry-forward controls
-    context_filter_strength: float      # lowers excess context
-    repeat_block_strength: float        # lowers repeated stable info
-    stale_prune_strength: float         # lowers stale carry-forward
-    compression_strength: float         # compresses retained state
-    # Output controls
-    output_bound_strength: float        # lowers verbosity
+    context_filter_strength: float
+    repeat_block_strength: float
+    stale_prune_strength: float
+    compression_strength: float
+    output_bound_strength: float
     progressive_disclosure_strength: float
-    # Tool controls
-    tool_threshold_strength: float      # rejects unnecessary tool calls
-    tool_token_reduction: float         # compresses accepted tool use
-    # Interaction efficiency
+    tool_threshold_strength: float
+    tool_token_reduction: float
     repair_reduction_strength: float
     rebrief_reduction_strength: float
-    turn_efficiency_bonus: float        # makes earlier convergence slightly more likely
+    turn_efficiency_bonus: float
 
 
 # ---------------------------
-# Scenario definitions
+# Default embedded parameter state
 # ---------------------------
 
-SCENARIOS: Dict[str, Scenario] = {
+DEFAULT_SCENARIOS: Dict[str, Scenario] = {
     "short_horizon_determinate": Scenario(
         name="Short-horizon determinate",
         base_turns=6,
@@ -142,7 +134,7 @@ SCENARIOS: Dict[str, Scenario] = {
     ),
 }
 
-UNGOVERNED = GovernanceConfig(
+DEFAULT_UNGOVERNED = GovernanceConfig(
     label="Ungoverned",
     governance_overhead_mean=0.0,
     governance_overhead_sd=0.0,
@@ -159,7 +151,7 @@ UNGOVERNED = GovernanceConfig(
     turn_efficiency_bonus=0.0,
 )
 
-GOVERNED = GovernanceConfig(
+DEFAULT_GOVERNED = GovernanceConfig(
     label="Governed",
     governance_overhead_mean=36.0,
     governance_overhead_sd=6.0,
@@ -175,6 +167,125 @@ GOVERNED = GovernanceConfig(
     rebrief_reduction_strength=0.54,
     turn_efficiency_bonus=0.16,
 )
+
+DEFAULT_RUN = {
+    "seed": 42,
+    "trials": 4000,
+    "outdir": "sim_outputs",
+}
+
+
+def scenario_to_dict(s: Scenario) -> Dict[str, Any]:
+    return {
+        "name": s.name,
+        "base_turns": s.base_turns,
+        "new_input_mean": s.new_input_mean,
+        "new_input_sd": s.new_input_sd,
+        "base_output_mean": s.base_output_mean,
+        "base_output_sd": s.base_output_sd,
+        "tool_need_prob": s.tool_need_prob,
+        "repair_prob": s.repair_prob,
+        "repeat_state_prob": s.repeat_state_prob,
+        "stale_retention_prob": s.stale_retention_prob,
+        "excess_context_prob": s.excess_context_prob,
+        "verbosity_prob": s.verbosity_prob,
+        "rebrief_prob": s.rebrief_prob,
+        "session_base_state": s.session_base_state,
+        "relevant_carry_forward": s.relevant_carry_forward,
+    }
+
+
+def gov_to_dict(g: GovernanceConfig) -> Dict[str, Any]:
+    return {
+        "label": g.label,
+        "governance_overhead_mean": g.governance_overhead_mean,
+        "governance_overhead_sd": g.governance_overhead_sd,
+        "context_filter_strength": g.context_filter_strength,
+        "repeat_block_strength": g.repeat_block_strength,
+        "stale_prune_strength": g.stale_prune_strength,
+        "compression_strength": g.compression_strength,
+        "output_bound_strength": g.output_bound_strength,
+        "progressive_disclosure_strength": g.progressive_disclosure_strength,
+        "tool_threshold_strength": g.tool_threshold_strength,
+        "tool_token_reduction": g.tool_token_reduction,
+        "repair_reduction_strength": g.repair_reduction_strength,
+        "rebrief_reduction_strength": g.rebrief_reduction_strength,
+        "turn_efficiency_bonus": g.turn_efficiency_bonus,
+    }
+
+
+def default_config_dict() -> Dict[str, Any]:
+    return {
+        "metadata": {
+            "label": "embedded_defaults",
+            "description": "Embedded default parameter state from the simulation engine",
+        },
+        "run": deepcopy(DEFAULT_RUN),
+        "scenarios": {k: scenario_to_dict(v) for k, v in DEFAULT_SCENARIOS.items()},
+        "governance": {
+            "ungoverned": gov_to_dict(DEFAULT_UNGOVERNED),
+            "governed": gov_to_dict(DEFAULT_GOVERNED),
+        },
+        "overrides": {},
+    }
+
+
+# ---------------------------
+# Config loading / merging
+# ---------------------------
+
+def deep_merge(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+    result = deepcopy(base)
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(result.get(key), dict):
+            result[key] = deep_merge(result[key], value)
+        else:
+            result[key] = deepcopy(value)
+    return result
+
+
+def load_yaml_file(path: str | Path) -> Dict[str, Any]:
+    with open(path, 'r', encoding='utf-8') as f:
+        data = yaml.safe_load(f) or {}
+    if not isinstance(data, dict):
+        raise ValueError(f"Config file must contain a top-level mapping: {path}")
+    return data
+
+
+def apply_schema_overrides(config: Dict[str, Any]) -> Dict[str, Any]:
+    # Supports files like calibration_batch_03.yaml where the actual changes are nested
+    # under an `overrides` section.
+    result = deepcopy(config)
+    overrides = result.pop('overrides', None)
+    if isinstance(overrides, dict):
+        result = deep_merge(result, overrides)
+    return result
+
+
+def load_effective_config(config_path: str | None = None, override_path: str | None = None) -> Dict[str, Any]:
+    config = default_config_dict()
+    if config_path:
+        loaded = apply_schema_overrides(load_yaml_file(config_path))
+        config = deep_merge(config, loaded)
+    if override_path:
+        loaded_override = apply_schema_overrides(load_yaml_file(override_path))
+        config = deep_merge(config, loaded_override)
+    return config
+
+
+def build_model_state(config: Dict[str, Any]) -> Tuple[Dict[str, Scenario], GovernanceConfig, GovernanceConfig, Dict[str, Any]]:
+    scenarios = {
+        key: Scenario(**value)
+        for key, value in config.get('scenarios', {}).items()
+    }
+    governance = config.get('governance', {})
+    if 'ungoverned' not in governance or 'governed' not in governance:
+        raise ValueError("Config must define governance.ungoverned and governance.governed")
+    ungoverned = GovernanceConfig(**governance['ungoverned'])
+    governed = GovernanceConfig(**governance['governed'])
+    run = deepcopy(DEFAULT_RUN)
+    run.update(config.get('run', {}))
+    return scenarios, ungoverned, governed, run
 
 
 # ---------------------------
@@ -195,25 +306,10 @@ def bernoulli(rng: np.random.Generator, p: float) -> bool:
 # Turn / task simulation
 # ---------------------------
 
-def simulate_task(
-    rng: np.random.Generator,
-    scenario: Scenario,
-    gov: GovernanceConfig
-) -> Dict[str, float]:
-    """
-    Simulate one task/session.
-
-    State representation:
-    - relevant_state: task-relevant carry-forward
-    - stable_state: repeated stable project info / durable state
-    - stale_state: superseded residue
-    - tool_artifacts: token residue from prior tool interactions
-    """
-    # Base number of turns; governance can reduce required turns.
+def simulate_task(rng: np.random.Generator, scenario: Scenario, gov: GovernanceConfig) -> Dict[str, float]:
     turn_efficiency = 1.0 - gov.turn_efficiency_bonus
     turns = max(2, int(round(clipped_normal(rng, scenario.base_turns * turn_efficiency, 1.2, low=2))))
 
-    # Session-start state: rebriefing of stable project context
     stable_state = scenario.session_base_state
     if bernoulli(rng, scenario.rebrief_prob * (1.0 - gov.rebrief_reduction_strength)):
         stable_state += clipped_normal(rng, scenario.session_base_state * 0.65, scenario.session_base_state * 0.12)
@@ -241,54 +337,48 @@ def simulate_task(
     if stable_state > scenario.session_base_state:
         totals["rebrief_events"] += 1.0
 
-    # Store per-turn cumulative total for charting
     cumulative_tokens = []
     running_total = 0.0
 
-    for t in range(1, turns + 1):
+    for _ in range(1, turns + 1):
         new_input = clipped_normal(rng, scenario.new_input_mean, scenario.new_input_sd, low=40)
         base_output = clipped_normal(rng, scenario.base_output_mean, scenario.base_output_sd, low=40)
         governance_tokens = clipped_normal(rng, gov.governance_overhead_mean, gov.governance_overhead_sd, low=0)
 
-        # Relevant context always persists to some degree, though governance compresses it.
         relevant_component = relevant_state + new_input
 
-        # Repeated stable info
         repeated_state = 0.0
         if bernoulli(rng, scenario.repeat_state_prob * (1.0 - gov.repeat_block_strength)):
             repeated_state = stable_state
 
-        # Stale residue persists unless pruned
         stale_component = stale_state * (1.0 - gov.stale_prune_strength * 0.85)
 
-        # Oversized context admission
         oversized_component = 0.0
         if bernoulli(rng, scenario.excess_context_prob * (1.0 - gov.context_filter_strength)):
             oversized_component = clipped_normal(rng, scenario.new_input_mean * 0.85, scenario.new_input_sd * 0.7, low=0)
 
-        # Previously generated tool artifacts carried forward
         artifact_component = tool_artifacts
 
         context_tokens = relevant_component + repeated_state + stale_component + oversized_component + artifact_component
         context_tokens *= (1.0 - gov.compression_strength * 0.55)
 
-        # Output generation
         verbose_excess = 0.0
         if bernoulli(rng, scenario.verbosity_prob * (1.0 - gov.output_bound_strength)):
-            verbose_excess = clipped_normal(rng, scenario.base_output_mean * (0.55 - 0.25 * gov.progressive_disclosure_strength),
-                                            scenario.base_output_sd * 0.35, low=0)
+            verbose_excess = clipped_normal(
+                rng,
+                scenario.base_output_mean * (0.55 - 0.25 * gov.progressive_disclosure_strength),
+                scenario.base_output_sd * 0.35,
+                low=0,
+            )
 
         output_tokens = base_output + verbose_excess
         output_tokens *= (1.0 - gov.output_bound_strength * 0.22)
 
-        # Tool use
         tool_tokens = 0.0
         unnecessary_tool_tokens = 0.0
         if bernoulli(rng, scenario.tool_need_prob):
-            # Necessary tool call
             tool_tokens += clipped_normal(rng, scenario.base_output_mean * 0.85, scenario.base_output_sd * 0.60, low=20)
         else:
-            # Unnecessary tool use occurs more often when ungoverned
             unnecessary_prob = max(0.0, 0.18 - gov.tool_threshold_strength * 0.12)
             if bernoulli(rng, unnecessary_prob):
                 unnecessary_tool_tokens = clipped_normal(rng, scenario.base_output_mean * 0.60, scenario.base_output_sd * 0.45, low=20)
@@ -296,17 +386,14 @@ def simulate_task(
 
         tool_tokens *= (1.0 - gov.tool_token_reduction)
 
-        # Repair loops / clarifications / reorientation
         repair_tokens = 0.0
         repair_prob = scenario.repair_prob * (1.0 - gov.repair_reduction_strength)
         if bernoulli(rng, repair_prob):
             totals["repair_loops"] += 1.0
             repair_tokens = clipped_normal(rng, scenario.new_input_mean * 0.55, scenario.new_input_sd * 0.40, low=25)
-            # Repair loops often add output and context
             output_tokens += repair_tokens * 0.38
             context_tokens += repair_tokens * 0.62
 
-        # Bookkeeping totals
         totals["context_tokens"] += context_tokens
         totals["output_tokens"] += output_tokens
         totals["tool_tokens"] += tool_tokens
@@ -322,47 +409,31 @@ def simulate_task(
         running_total += context_tokens + output_tokens + tool_tokens + governance_tokens
         cumulative_tokens.append(running_total)
 
-        # State updates for next turn
-        # Relevant state grows slowly, but governance compresses stored form.
         relevant_state = (scenario.relevant_carry_forward + 0.10 * new_input + 0.18 * output_tokens)
         relevant_state *= (1.0 - gov.compression_strength * 0.55)
 
-        # Stable state grows when outputs are verbose or repeated state is carried around.
         stable_state = max(
             scenario.session_base_state * 0.55,
             (stable_state * 0.78 + repeated_state * 0.14 + verbose_excess * 0.10 + 0.04 * output_tokens)
-            * (1.0 - gov.repeat_block_strength * 0.48)
+            * (1.0 - gov.repeat_block_strength * 0.48),
         )
 
-        # Stale state accumulates unless pruned.
         stale_state = max(
             0.0,
-            stale_state * (0.85 - gov.stale_prune_strength * 0.40) + 0.08 * repeated_state + 0.06 * verbose_excess
+            stale_state * (0.85 - gov.stale_prune_strength * 0.40) + 0.08 * repeated_state + 0.06 * verbose_excess,
         )
 
-        # Tool artifacts persist unless governed.
         tool_artifacts = max(0.0, tool_tokens * (0.26 - gov.tool_threshold_strength * 0.10))
 
-    totals["total_tokens"] = (
-        totals["context_tokens"] + totals["output_tokens"] + totals["tool_tokens"] + totals["governance_tokens"]
-    )
+    totals["total_tokens"] = totals["context_tokens"] + totals["output_tokens"] + totals["tool_tokens"] + totals["governance_tokens"]
     totals["cumulative_curve"] = cumulative_tokens
     return totals
 
 
-def monte_carlo(
-    scenario: Scenario,
-    gov: GovernanceConfig,
-    trials: int,
-    seed: int
-) -> Tuple[pd.DataFrame, List[List[float]]]:
-    """
-    Run Monte Carlo trials for one scenario/governance condition.
-    """
+def monte_carlo(scenario: Scenario, gov: GovernanceConfig, trials: int, seed: int) -> Tuple[pd.DataFrame, List[List[float]]]:
     rng = np.random.default_rng(seed)
     rows = []
     curves = []
-
     for i in range(trials):
         result = simulate_task(rng, scenario, gov)
         result["trial"] = i + 1
@@ -370,7 +441,6 @@ def monte_carlo(
         result["condition"] = gov.label
         rows.append(result)
         curves.append(result["cumulative_curve"])
-
     df = pd.DataFrame(rows)
     return df, curves
 
@@ -408,8 +478,6 @@ def compare_conditions(ung_df: pd.DataFrame, gov_df: pd.DataFrame, scenario_name
     delta_total = ung["avg_tokens_per_task"] - gov["avg_tokens_per_task"]
     reduction_pct = 100 * delta_total / ung["avg_tokens_per_task"]
 
-    # Attribution of governed savings
-    # Split savings into direct component deltas plus a convergence/turn-efficiency component.
     context_delta_raw = max(0.0, ung["avg_context_tokens"] - gov["avg_context_tokens"])
     output_delta_raw = max(0.0, ung["avg_output_tokens"] - gov["avg_output_tokens"])
     tool_delta_raw = max(0.0, ung["avg_tool_tokens"] - gov["avg_tool_tokens"])
@@ -504,7 +572,6 @@ def save_growth_chart(curves_u: List[List[float]], curves_g: List[List[float]], 
 
 
 def save_attribution_chart(compare_df: pd.DataFrame, outdir: Path) -> None:
-    # average across scenarios
     avg_context = compare_df["context_share_of_savings_pct"].mean()
     avg_output = compare_df["output_share_of_savings_pct"].mean()
     avg_tool = compare_df["tool_share_of_savings_pct"].mean()
@@ -526,16 +593,14 @@ def save_attribution_chart(compare_df: pd.DataFrame, outdir: Path) -> None:
 # Main run logic
 # ---------------------------
 
-def run_batch(trials: int, seed: int, outdir: Path) -> None:
+def run_batch(trials: int, seed: int, outdir: Path, scenarios: Dict[str, Scenario], ungoverned: GovernanceConfig, governed: GovernanceConfig) -> None:
     ensure_dir(outdir)
 
     all_rows = []
     compare_rows = []
     attribution_rows = []
-
     growth_curves = {}
 
-    # Deterministic benchmark from the Token Governance paper framing
     benchmark = pd.DataFrame([
         {
             "scenario": "Paper benchmark",
@@ -557,12 +622,12 @@ def run_batch(trials: int, seed: int, outdir: Path) -> None:
     ])
     benchmark.to_csv(outdir / "paper_benchmark_anchor.csv", index=False)
 
-    for idx, (key, scenario) in enumerate(SCENARIOS.items(), start=1):
+    for idx, (_, scenario) in enumerate(scenarios.items(), start=1):
         ung_seed = seed + idx * 101
         gov_seed = seed + idx * 101 + 1
 
-        ung_df, ung_curves = monte_carlo(scenario, UNGOVERNED, trials, ung_seed)
-        gov_df, gov_curves = monte_carlo(scenario, GOVERNED, trials, gov_seed)
+        ung_df, ung_curves = monte_carlo(scenario, ungoverned, trials, ung_seed)
+        gov_df, gov_curves = monte_carlo(scenario, governed, trials, gov_seed)
 
         all_rows.append(ung_df)
         all_rows.append(gov_df)
@@ -584,7 +649,6 @@ def run_batch(trials: int, seed: int, outdir: Path) -> None:
     compare_df = pd.DataFrame(compare_rows)
     attribution_df = pd.DataFrame(attribution_rows)
 
-    # Summary by scenario x condition
     summary_rows = []
     for (scenario_name, condition), g in all_df.groupby(["scenario", "condition"]):
         row = summarize_condition(g).to_dict()
@@ -593,13 +657,11 @@ def run_batch(trials: int, seed: int, outdir: Path) -> None:
         summary_rows.append(row)
     summary_df = pd.DataFrame(summary_rows)
 
-    # Save tabular outputs
     all_df.drop(columns=["cumulative_curve"]).to_csv(outdir / "simulation_trial_level.csv", index=False)
     summary_df.to_csv(outdir / "simulation_summary.csv", index=False)
     compare_df.to_csv(outdir / "simulation_compare.csv", index=False)
     attribution_df.to_csv(outdir / "simulation_attribution.csv", index=False)
 
-    # Charts
     save_bar_chart(compare_df, outdir)
     save_attribution_chart(compare_df, outdir)
 
@@ -607,7 +669,6 @@ def run_batch(trials: int, seed: int, outdir: Path) -> None:
         slug = scenario_name.lower().replace(" ", "_").replace("-", "_")
         save_growth_chart(u, g, scenario_name, outdir / f"chart_turn_growth_{slug}.png")
 
-    # Simple markdown report
     report_lines = [
         "# Persona Token Governance Monte Carlo Results",
         "",
@@ -633,14 +694,29 @@ def run_batch(trials: int, seed: int, outdir: Path) -> None:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
-    p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--trials", type=int, default=4000)
-    p.add_argument("--outdir", type=str, default="sim_outputs")
+    p.add_argument("--seed", type=int, default=None)
+    p.add_argument("--trials", type=int, default=None)
+    p.add_argument("--outdir", type=str, default=None)
+    p.add_argument("--config", type=str, default=None, help="Path to a base YAML config file")
+    p.add_argument("--override", type=str, default=None, help="Path to a YAML override file")
     return p.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    outdir = Path(args.outdir)
-    run_batch(trials=args.trials, seed=args.seed, outdir=outdir)
+    effective_config = load_effective_config(args.config, args.override)
+    scenarios, ungoverned, governed, run = build_model_state(effective_config)
+
+    seed = args.seed if args.seed is not None else int(run['seed'])
+    trials = args.trials if args.trials is not None else int(run['trials'])
+    outdir = Path(args.outdir if args.outdir is not None else run['outdir'])
+
+    run_batch(
+        trials=trials,
+        seed=seed,
+        outdir=outdir,
+        scenarios=scenarios,
+        ungoverned=ungoverned,
+        governed=governed,
+    )
     print(f"Simulation complete. Outputs written to: {outdir.resolve()}")
