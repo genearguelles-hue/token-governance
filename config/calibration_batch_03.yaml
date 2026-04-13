@@ -1,0 +1,44 @@
+metadata:
+  label: calibration_batch_03_seed42
+  description: First config-driven calibration batch override
+  created_from: base_parameters
+  notes: >
+    This file defines a first small set of explicit parameter overrides relative to
+    config/base_parameters.yaml. The goal is to make Batch 03 the first genuinely
+    parameter-adjusted calibration run, while preserving the existing analytical
+    protocol and scenario ordering expectations.
+
+run:
+  seed: 42
+  trials: 4000
+  outdir: simulation/outputs/calibration_batch_03_seed42
+
+overrides:
+  scenarios:
+    short_horizon_determinate:
+      repair_prob: 0.15
+      excess_context_prob: 0.11
+
+    long_horizon_workflow:
+      repair_prob: 0.26
+      excess_context_prob: 0.30
+
+    nonlinear_human_centered:
+      repair_prob: 0.31
+      excess_context_prob: 0.36
+      repeat_state_prob: 0.40
+
+  governance:
+    governed:
+      governance_overhead_mean: 38.0
+      compression_strength: 0.48
+      repair_reduction_strength: 0.52
+      context_filter_strength: 0.55
+      repeat_block_strength: 0.58
+
+  notes:
+    - Reduce repair probability slightly across scenarios to tighten the ambiguity/repair bridge.
+    - Reduce excess-context probability slightly to limit runaway context inflation.
+    - Slightly reduce repeat-state carry-forward in the nonlinear human-centered scenario.
+    - Increase governed compression and repair reduction strength to reinforce state-discipline savings.
+    - Increase governance overhead slightly so the governed condition remains visibly non-free.
