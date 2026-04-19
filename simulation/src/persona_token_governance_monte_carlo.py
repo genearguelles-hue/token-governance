@@ -34,6 +34,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
+OUTPUT_SCHEMA_VERSION = "v1"
+
 
 # ---------------------------
 # Data model
@@ -430,15 +432,17 @@ def simulate_task(rng: np.random.Generator, scenario: Scenario, gov: GovernanceC
     return totals
 
 
-def monte_carlo(scenario: Scenario, gov: GovernanceConfig, trials: int, seed: int) -> Tuple[pd.DataFrame, List[List[float]]]:
+def monte_carlo(scenario_key: str, scenario: Scenario, condition_key: str, gov: GovernanceConfig, trials: int, seed: int) -> Tuple[pd.DataFrame, List[List[float]]]:
     rng = np.random.default_rng(seed)
     rows = []
     curves = []
     for i in range(trials):
         result = simulate_task(rng, scenario, gov)
         result["trial"] = i + 1
-        result["scenario"] = scenario.name
-        result["condition"] = gov.label
+        result["scenario"] = scenario_key
+        result["scenario_label"] = scenario.name
+        result["condition"] = condition_key
+        result["condition_label"] = gov.label
         rows.append(result)
         curves.append(result["cumulative_curve"])
     df = pd.DataFrame(rows)
@@ -471,7 +475,7 @@ def summarize_condition(df: pd.DataFrame) -> pd.Series:
     })
 
 
-def compare_conditions(ung_df: pd.DataFrame, gov_df: pd.DataFrame, scenario_name: str) -> pd.Series:
+def compare_conditions(ung_df: pd.DataFrame, gov_df: pd.DataFrame, scenario_key: str, scenario_label: str) -> pd.Series:
     ung = summarize_condition(ung_df)
     gov = summarize_condition(gov_df)
 
@@ -495,7 +499,8 @@ def compare_conditions(ung_df: pd.DataFrame, gov_df: pd.DataFrame, scenario_name
 
     denom = max(delta_total, 1e-9)
     return pd.Series({
-        "scenario": scenario_name,
+        "scenario": scenario_key,
+        "scenario_label": scenario_label,
         "ungoverned_avg_tokens_per_task": ung["avg_tokens_per_task"],
         "governed_avg_tokens_per_task": gov["avg_tokens_per_task"],
         "absolute_reduction_tokens": delta_total,
@@ -527,7 +532,8 @@ def save_bar_chart(compare_df: pd.DataFrame, outdir: Path) -> None:
     width = 0.36
     plt.bar(x - width / 2, compare_df["ungoverned_avg_tokens_per_task"], width=width, label="Ungoverned")
     plt.bar(x + width / 2, compare_df["governed_avg_tokens_per_task"], width=width, label="Governed")
-    plt.xticks(x, compare_df["scenario"], rotation=15, ha="right")
+    labels = compare_df["scenario_label"] if "scenario_label" in compare_df.columns else compare_df["scenario"]
+    plt.xticks(x, labels, rotation=15, ha="right")
     plt.ylabel("Average tokens per task")
     plt.title("Governed vs Ungoverned: Average Token Burn per Task")
     plt.legend()
@@ -536,7 +542,8 @@ def save_bar_chart(compare_df: pd.DataFrame, outdir: Path) -> None:
     plt.close()
 
     plt.figure(figsize=(8, 5))
-    plt.bar(compare_df["scenario"], compare_df["reduction_pct"])
+    labels = compare_df["scenario_label"] if "scenario_label" in compare_df.columns else compare_df["scenario"]
+    plt.bar(labels, compare_df["reduction_pct"])
     plt.ylabel("Percent reduction")
     plt.title("Percent Token Reduction from Governance")
     plt.xticks(rotation=15, ha="right")
@@ -593,7 +600,7 @@ def save_attribution_chart(compare_df: pd.DataFrame, outdir: Path) -> None:
 # Main run logic
 # ---------------------------
 
-def run_batch(trials: int, seed: int, outdir: Path, scenarios: Dict[str, Scenario], ungoverned: GovernanceConfig, governed: GovernanceConfig) -> None:
+def run_batch(trials: int, seed: int, outdir: Path, scenarios: Dict[str, Scenario], ungoverned: GovernanceConfig, governed: GovernanceConfig, batch_label: str = "unknown_batch") -> None:
     ensure_dir(outdir)
 
     all_rows = []
@@ -603,7 +610,8 @@ def run_batch(trials: int, seed: int, outdir: Path, scenarios: Dict[str, Scenari
 
     benchmark = pd.DataFrame([
         {
-            "scenario": "Paper benchmark",
+            "scenario": "paper_benchmark",
+            "scenario_label": "Paper benchmark",
             "ungoverned_avg_tokens_per_task": 39900.0,
             "governed_avg_tokens_per_task": 15876.0,
             "absolute_reduction_tokens": 24024.0,
@@ -622,42 +630,66 @@ def run_batch(trials: int, seed: int, outdir: Path, scenarios: Dict[str, Scenari
     ])
     benchmark.to_csv(outdir / "paper_benchmark_anchor.csv", index=False)
 
-    for idx, (_, scenario) in enumerate(scenarios.items(), start=1):
+    for idx, (scenario_key, scenario) in enumerate(scenarios.items(), start=1):
         ung_seed = seed + idx * 101
         gov_seed = seed + idx * 101 + 1
 
-        ung_df, ung_curves = monte_carlo(scenario, ungoverned, trials, ung_seed)
-        gov_df, gov_curves = monte_carlo(scenario, governed, trials, gov_seed)
+        ung_df, ung_curves = monte_carlo(scenario_key, scenario, "ungoverned", ungoverned, trials, ung_seed)
+        gov_df, gov_curves = monte_carlo(scenario_key, scenario, "governed", governed, trials, gov_seed)
 
         all_rows.append(ung_df)
         all_rows.append(gov_df)
 
-        comp = compare_conditions(ung_df, gov_df, scenario.name)
+        comp = compare_conditions(ung_df, gov_df, scenario_key, scenario.name)
         compare_rows.append(comp)
 
         attribution_rows.append(pd.Series({
-            "scenario": scenario.name,
+            "scenario": scenario_key,
+            "scenario_label": scenario.name,
             "context_share_pct": comp["context_share_of_savings_pct"],
             "output_share_pct": comp["output_share_of_savings_pct"],
             "tool_share_pct": comp["tool_share_of_savings_pct"],
             "turn_share_pct": comp["turn_share_of_savings_pct"],
         }))
 
-        growth_curves[scenario.name] = (ung_curves, gov_curves)
+        growth_curves[scenario_key] = (scenario.name, ung_curves, gov_curves)
 
     all_df = pd.concat(all_rows, ignore_index=True)
     compare_df = pd.DataFrame(compare_rows)
     attribution_df = pd.DataFrame(attribution_rows)
 
     summary_rows = []
-    for (scenario_name, condition), g in all_df.groupby(["scenario", "condition"]):
+    for (scenario_key, scenario_label, condition_key, condition_label), g in all_df.groupby(["scenario", "scenario_label", "condition", "condition_label"]):
         row = summarize_condition(g).to_dict()
-        row["scenario"] = scenario_name
-        row["condition"] = condition
+        row["scenario"] = scenario_key
+        row["scenario_label"] = scenario_label
+        row["condition"] = condition_key
+        row["condition_label"] = condition_label
         summary_rows.append(row)
     summary_df = pd.DataFrame(summary_rows)
 
-    all_df.drop(columns=["cumulative_curve"]).to_csv(outdir / "simulation_trial_level.csv", index=False)
+    # Attach stable schema metadata
+    for df in [all_df, summary_df, compare_df, attribution_df]:
+        df.insert(0, "schema_version", OUTPUT_SCHEMA_VERSION)
+        df.insert(1, "batch_label", batch_label)
+
+    benchmark.insert(0, "schema_version", OUTPUT_SCHEMA_VERSION)
+    benchmark.insert(1, "batch_label", batch_label)
+
+    trial_df = all_df.drop(columns=["cumulative_curve"])
+    trial_cols = ["schema_version", "batch_label", "trial", "scenario", "scenario_label", "condition", "condition_label"] + [c for c in trial_df.columns if c not in {"schema_version","batch_label","trial","scenario","scenario_label","condition","condition_label"}]
+    trial_df = trial_df[trial_cols]
+
+    compare_cols = ["schema_version", "batch_label", "scenario", "scenario_label", "ungoverned_avg_tokens_per_task", "governed_avg_tokens_per_task", "absolute_reduction_tokens", "reduction_pct", "ungoverned_avg_turns", "governed_avg_turns", "ungoverned_avg_repair_loops", "governed_avg_repair_loops", "ungoverned_avg_rebrief_rate", "governed_avg_rebrief_rate", "context_share_of_savings_pct", "output_share_of_savings_pct", "tool_share_of_savings_pct", "turn_share_of_savings_pct"]
+    compare_df = compare_df[compare_cols]
+
+    attribution_cols = ["schema_version", "batch_label", "scenario", "scenario_label", "context_share_pct", "output_share_pct", "tool_share_pct", "turn_share_pct"]
+    attribution_df = attribution_df[attribution_cols]
+
+    summary_prefix = ["schema_version", "batch_label", "scenario", "scenario_label", "condition", "condition_label"]
+    summary_df = summary_df[summary_prefix + [c for c in summary_df.columns if c not in summary_prefix]]
+
+    trial_df.to_csv(outdir / "simulation_trial_level.csv", index=False)
     summary_df.to_csv(outdir / "simulation_summary.csv", index=False)
     compare_df.to_csv(outdir / "simulation_compare.csv", index=False)
     attribution_df.to_csv(outdir / "simulation_attribution.csv", index=False)
@@ -665,9 +697,8 @@ def run_batch(trials: int, seed: int, outdir: Path, scenarios: Dict[str, Scenari
     save_bar_chart(compare_df, outdir)
     save_attribution_chart(compare_df, outdir)
 
-    for scenario_name, (u, g) in growth_curves.items():
-        slug = scenario_name.lower().replace(" ", "_").replace("-", "_")
-        save_growth_chart(u, g, scenario_name, outdir / f"chart_turn_growth_{slug}.png")
+    for scenario_key, (scenario_label, u, g) in growth_curves.items():
+        save_growth_chart(u, g, scenario_label, outdir / f"chart_turn_growth_{scenario_key}.png")
 
     report_lines = [
         "# Persona Token Governance Monte Carlo Results",
@@ -677,16 +708,17 @@ def run_batch(trials: int, seed: int, outdir: Path, scenarios: Dict[str, Scenari
         "",
         "## Cross-scenario comparison",
         "",
-        compare_df.to_markdown(index=False),
+        compare_df[["scenario_label","ungoverned_avg_tokens_per_task","governed_avg_tokens_per_task","absolute_reduction_tokens","reduction_pct"]].to_markdown(index=False),
         "",
         "## Attribution",
         "",
-        attribution_df.to_markdown(index=False),
+        attribution_df[["scenario_label","context_share_pct","output_share_pct","tool_share_pct","turn_share_pct"]].to_markdown(index=False),
         "",
         "## Notes",
         "",
         "- Trial-level outputs include context, output, tool, governance, and repair metrics.",
         "- Governance is modeled as structural constraint over context admission, carry-forward, verbosity, tool thresholds, and repair/rebrief rates.",
+        f"- Output schema version: {OUTPUT_SCHEMA_VERSION}.",
         "- The paper benchmark anchor is exported separately in `paper_benchmark_anchor.csv`.",
     ]
     (outdir / "README.md").write_text("\n".join(report_lines), encoding="utf-8")
@@ -711,6 +743,8 @@ if __name__ == "__main__":
     trials = args.trials if args.trials is not None else int(run['trials'])
     outdir = Path(args.outdir if args.outdir is not None else run['outdir'])
 
+    batch_label = str(effective_config.get("metadata", {}).get("label", outdir.name))
+
     run_batch(
         trials=trials,
         seed=seed,
@@ -718,5 +752,6 @@ if __name__ == "__main__":
         scenarios=scenarios,
         ungoverned=ungoverned,
         governed=governed,
+        batch_label=batch_label,
     )
     print(f"Simulation complete. Outputs written to: {outdir.resolve()}")

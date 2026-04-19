@@ -1,2 +1,2 @@
-scenario,ungoverned_avg_tokens_per_task,governed_avg_tokens_per_task,absolute_reduction_tokens,reduction_pct,ungoverned_avg_turns,governed_avg_turns,ungoverned_avg_repair_loops,governed_avg_repair_loops,ungoverned_avg_rebrief_rate,governed_avg_rebrief_rate,context_share_of_savings_pct,output_share_of_savings_pct,tool_share_of_savings_pct,turn_share_of_savings_pct
-Paper benchmark,39900.0,15876.0,24024.0,60.21052631578947,14.0,9.8,,,,,50.0,21.0,12.0,17.0
+scenario,scenario_label,ungoverned_avg_tokens_per_task,governed_avg_tokens_per_task,absolute_reduction_tokens,reduction_pct,ungoverned_avg_turns,governed_avg_turns,ungoverned_avg_repair_loops,governed_avg_repair_loops,ungoverned_avg_rebrief_rate,governed_avg_rebrief_rate,context_share_of_savings_pct,output_share_of_savings_pct,tool_share_of_savings_pct,turn_share_of_savings_pct
+paper_benchmark,Paper benchmark,39900.0,15876.0,24024.0,60.21052631578947,14.0,9.8,,,,,50.0,21.0,12.0,17.0
