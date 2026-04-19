@@ -1,0 +1,89 @@
+[
+  {
+    "timestamp": 1776419766.586665,
+    "event_type": "persona_definition_update",
+    "persona_id": "financial-guidance-demo-entity",
+    "persona_name": "Financial Guidance Demo Entity",
+    "artifact_changed": "system-prompt.md",
+    "change_summary": "Added Conciseness Discipline and tightened Token Governance Behavior.",
+    "user_input": "",
+    "response": "",
+    "state_snapshot": {
+      "artifact_changed": "system-prompt.md",
+      "change_type": "runtime_persona_definition_update"
+    },
+    "engrams": {
+      "mission": 1,
+      "axiom": 1,
+      "primitive": 1,
+      "token_governance": 1
+    },
+    "axiom_pressure": 0,
+    "primitive_saturation": 1,
+    "drift_status": "\u2705 stable",
+    "token_metrics": {
+      "token_governance_relevance": true,
+      "response_word_count": null,
+      "response_char_count": null
+    },
+    "assessment_metrics": {},
+    "source_files": [
+      "system-prompt.md"
+    ],
+    "notes": "Runtime Persona definition changed; concision is now an explicit governed behavior.",
+    "previous_hash": "GENESIS",
+    "hash": "d1bfa0582d7f7b8a3d2cb56f30b8847cf6d170ba5d52f0549e9312c16b34f857"
+  },
+  {
+    "timestamp": 1776419807.7307892,
+    "event_type": "governed_vs_ungoverned_assessment",
+    "persona_id": "financial-guidance-demo-entity",
+    "persona_name": "Financial Guidance Demo Entity",
+    "artifact_changed": null,
+    "change_summary": "Recorded governed vs. ungoverned assessment results.",
+    "user_input": "",
+    "response": "",
+    "state_snapshot": {
+      "assessment_md": "/Users/genea1/Documents/Literature & Content Projects/White Paper Projects/TokenBurn_Simulation/token-governance/docs/demo-entities/financial-guidance/assessments/assessment-governed-vs-ungoverned-2026-04-17_16-15-33.md",
+      "assessment_csv": "/Users/genea1/Documents/Literature & Content Projects/White Paper Projects/TokenBurn_Simulation/token-governance/docs/demo-entities/financial-guidance/assessments/assessment-governed-vs-ungoverned-2026-04-17_16-15-33.csv",
+      "comparison_type": "governed_vs_ungoverned"
+    },
+    "engrams": {
+      "assessment": 1,
+      "token_governance": 1,
+      "drift_monitoring": 1
+    },
+    "axiom_pressure": 3,
+    "primitive_saturation": 2,
+    "drift_status": "\u26a0\ufe0f axiom pressure detected",
+    "token_metrics": {
+      "avg_governed_words": 308.7,
+      "avg_ungoverned_words": 270.0,
+      "avg_governed_characters": 2006.3,
+      "avg_ungoverned_characters": 1795.0
+    },
+    "assessment_metrics": {
+      "governed_stronger": 2,
+      "ungoverned_stronger_or_more_concise": 1,
+      "ties": 0,
+      "avg_governed_words": 308.7,
+      "avg_ungoverned_words": 270.0,
+      "avg_governed_characters": 2006.3,
+      "avg_ungoverned_characters": 1795.0,
+      "avg_governed_overall_score": 4.33,
+      "avg_ungoverned_overall_score": 4.33,
+      "rows": 3,
+      "governed_drift_flags": [
+        "advice_overreach"
+      ],
+      "ungoverned_drift_flags": []
+    },
+    "source_files": [
+      "/Users/genea1/Documents/Literature & Content Projects/White Paper Projects/TokenBurn_Simulation/token-governance/docs/demo-entities/financial-guidance/assessments/assessment-governed-vs-ungoverned-2026-04-17_16-15-33.md",
+      "/Users/genea1/Documents/Literature & Content Projects/White Paper Projects/TokenBurn_Simulation/token-governance/docs/demo-entities/financial-guidance/assessments/assessment-governed-vs-ungoverned-2026-04-17_16-15-33.csv"
+    ],
+    "notes": "Post-conciseness-update comparison run.",
+    "previous_hash": "d1bfa0582d7f7b8a3d2cb56f30b8847cf6d170ba5d52f0549e9312c16b34f857",
+    "hash": "aaf68d88a894b152dd066f7cecd7444cbddc0829e3146b0be9122f692b800b12"
+  }
+]

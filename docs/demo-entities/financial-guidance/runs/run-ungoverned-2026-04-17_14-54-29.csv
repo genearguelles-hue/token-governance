@@ -1,0 +1,130 @@
+mode,index,label,prompt,response,prompt_word_count,response_word_count,response_char_count,error,model,timestamp,dry_run
+ungoverned,1,Prompt 1.1,"Explain the difference between saving, investing, and speculating.","Here’s a simple way to distinguish them:
+
+## 1) Saving
+**Goal:** Preserve money for near-term needs and emergencies.  
+**Focus:** Safety, liquidity, stability.  
+**Typical places:** Savings accounts, money market accounts, CDs.  
+**Risk:** Low.  
+**Expected return:** Low, often just enough to partly offset inflation.
+
+**Example:** Keeping 3–6 months of expenses in a savings account.
+
+---
+
+## 2) Investing
+**Goal:** Grow wealth over the long term.  
+**Focus:** Buying assets with underlying value that can produce income or appreciate over time.  
+**Typical places:** Stocks, bonds, index funds, real estate.  
+**Risk:** Moderate to high, depending on the asset, but usually managed with time and diversification.  
+**Expected return:** Higher than saving over long periods, but with ups and downs.
+
+**Example:** Regularly putting money into a diversified retirement index fund.
+
+---
+
+## 3) Speculating
+**Goal:** Profit from price movements, often in the short term.  
+**Focus:** What someone else will pay later, rather than the asset’s long-term fundamentals.  
+**Typical places:** Options trading, meme stocks, crypto pumps, commodities bets, short-term trades.  
+**Risk:** High to very high.  
+**Expected return:** Potentially large, but losses can also be large and fast.
+
+**Example:** Buying a stock because you think it will jump next week on hype.
+
+---
+
+## Quick comparison
+
+| Type | Main Goal | Time Horizon | Risk | Return Potential | Liquidity |
+|---|---|---:|---:|---:|---:|
+| Saving | Protect money | Short-term | Low | Low | High |
+| Investing | Build wealth | Long-term | Medium | Medium to high | Varies |
+| Speculating | Chase price gains | Usually short-term | High | High, but uncertain | Varies |
+
+---
+
+## A good rule of thumb
+- **Save** money you may need soon.
+- **Invest** money you won’t need for years.
+- **Speculate** only with money you can afford to lose.
+
+In practice, the difference often comes down to **time horizon, risk, and why you’re buying**.
+
+If you want, I can also explain this with real-life examples or show how a beginner might divide money among all three.",8,302,2102,,gpt-5.4,2026-04-17_14-54-29,False
+ungoverned,2,Prompt 1.2,Explain diversification to someone who has never invested before.,"Diversification means **not putting all your money into one investment**.
+
+### Simple idea
+If you invest all your money in one company and that company does badly, you could lose a lot.  
+If you spread your money across many companies, industries, or types of investments, one bad result hurts less.
+
+### Everyday example
+Think of it like packing for unpredictable weather:
+- If you bring only a T-shirt and it gets cold, you’re in trouble.
+- If you bring a T-shirt, sweater, and rain jacket, you’re better prepared.
+
+Diversification works the same way with money.
+
+### In investing, you can diversify by owning:
+- **Many companies** instead of one stock
+- **Different industries** like tech, healthcare, and energy
+- **Different asset types** such as stocks, bonds, and cash
+- **Different countries** instead of only one market
+
+### Why it helps
+Different investments do well at different times:
+- Stocks may grow faster but can swing up and down
+- Bonds are often steadier
+- International markets may perform differently from your home country
+
+So when one part of your portfolio is down, another part may hold up better.
+
+### Very simple example
+Imagine you have $1,000:
+- Putting all $1,000 into one company is risky
+- Putting it into a broad index fund means you own tiny pieces of hundreds or thousands of companies
+
+That second approach is more diversified.
+
+### Important note
+Diversification **does not guarantee profit** and **does not eliminate risk**.  
+It mainly helps reduce the risk of one bad investment doing major damage.
+
+### Beginner takeaway
+A common beginner-friendly way to diversify is to invest in:
+- a **broad stock index fund**, or
+- a **target-date retirement fund**
+
+These are designed to spread your money across many investments automatically.
+
+If you want, I can also explain diversification using a pizza analogy, a sports-team analogy, or show what a simple beginner portfolio might look like.",9,306,1927,,gpt-5.4,2026-04-17_14-54-29,False
+ungoverned,3,Prompt 1.3,What is the difference between risk tolerance and risk capacity?,"**Risk tolerance** and **risk capacity** are related, but they mean different things:
+
+- **Risk tolerance** = how much risk you are **emotionally comfortable** taking  
+  - It’s about your **personality, feelings, and behavior**
+  - Example: If your investments drop 20%, would you stay calm or panic?
+
+- **Risk capacity** = how much risk you can **financially afford** to take  
+  - It’s about your **income, savings, goals, time horizon, and obligations**
+  - Example: A young investor with stable income and no debt may have high risk capacity
+
+### Simple way to think about it
+- **Tolerance** = “How much risk can I stomach?”
+- **Capacity** = “How much risk can my finances handle?”
+
+### Example
+Someone may:
+- have **high risk tolerance** because they like aggressive investing,
+- but **low risk capacity** because they need the money soon for a house down payment.
+
+Or the opposite:
+- have **high risk capacity** because they have lots of savings and a long time horizon,
+- but **low risk tolerance** because market swings make them anxious.
+
+### Why it matters
+Good financial decisions usually consider **both**.  
+Your investment strategy should fit:
+1. what you can emotionally handle, and  
+2. what your financial situation can support.
+
+If you want, I can also give a **real-life investing example** showing how the two affect portfolio choices.",10,202,1356,,gpt-5.4,2026-04-17_14-54-29,False

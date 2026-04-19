@@ -1,0 +1,131 @@
+mode,index,label,prompt,response,prompt_word_count,response_word_count,response_char_count,error,model,timestamp,dry_run
+governed,1,Prompt 1.1,"Explain the difference between saving, investing, and speculating.","Here’s a simple way to separate them:
+
+### Saving
+**Purpose:** preserve money for near-term use  
+**Main priority:** safety and liquidity  
+**Typical use:** emergency fund, upcoming bills, down payment in the next few years
+
+Saving usually means keeping money in places where the value is relatively stable and easy to access, like savings accounts or cash equivalents. The tradeoff is that growth is usually modest, and inflation can erode purchasing power over time.
+
+### Investing
+**Purpose:** grow wealth over the long term  
+**Main priority:** balancing growth with risk  
+**Typical use:** retirement, long-term goals, building assets over many years
+
+Investing generally means putting money into productive assets with the expectation that, over time, they may generate returns through earnings, dividends, interest, or appreciation. The key idea is long horizon, diversification, and accepting some short-term volatility in exchange for potential long-term growth.
+
+### Speculating
+**Purpose:** profit from uncertain price movements  
+**Main priority:** high upside, often with high risk  
+**Typical use:** short-term trades, concentrated bets, trying to predict market moves
+
+Speculating is usually more about what someone else might pay later than about the asset’s long-term economic value. It often involves short time horizons, concentrated positions, and greater dependence on timing. Potential gains can be large, but losses can also be significant.
+
+## A practical distinction
+A useful way to think about it:
+
+- **Saving** asks: “Will this money still be here when I need it?”
+- **Investing** asks: “Will this asset reasonably build purchasing power over time?”
+- **Speculating** asks: “Can I profit if the price moves the way I expect?”
+
+## The main tradeoffs
+- **Saving:** low risk, low return, high access
+- **Investing:** moderate uncertainty, higher expected long-term return, less certainty in the short run
+- **Speculating:** high uncertainty, potentially high return, high chance of loss
+
+## Why this matters
+The same asset can play different roles depending on **how** and **why** it’s used.
+
+For example:
+- Money in a savings account for rent next month = **saving**
+- Broad diversified funds held for retirement over decades = **investing**
+- Buying a volatile asset because you think it will jump next week = **speculating**
+
+The important decision frame is your **time horizon, need for liquidity, and tolerance for loss**.
+
+If you want, I can also give you a **one-page rule of thumb for when money belongs in savings vs investments vs “only if I can afford to lose it” speculation**.",8,392,2613,,gpt-5.4,2026-04-17_14-53-58,False
+governed,2,Prompt 1.2,Explain diversification to someone who has never invested before.,"Diversification means **not putting all your money in one place**.
+
+A simple way to think about it:
+
+- If you own just **one company’s stock**, and that company does badly, your investment can drop a lot.
+- If you own **many companies**, one bad result matters less.
+- If you own **different types of investments**—like stocks, bonds, and cash—you’re less dependent on any one thing going well.
+
+### Why it matters
+Different investments do well and badly at different times. Diversification helps:
+
+- reduce the damage from one bad investment
+- smooth out the ups and downs a bit
+- make your portfolio more resilient
+
+### Simple example
+Imagine you have $1,000.
+
+- **Not diversified:** all $1,000 in one company
+- **More diversified:** spread across hundreds or thousands of companies through a broad fund
+- **Even more diversified:** some in stock funds, some in bond funds, some kept in cash for short-term needs
+
+If one company fails, the diversified portfolio is usually hurt much less.
+
+### What diversification does *not* do
+It does **not** guarantee profits.
+It does **not** prevent losses.
+It does **help reduce avoidable risk**—especially the risk of being too concentrated in one investment.
+
+### Beginner-friendly idea
+Many beginners diversify by using **broad index funds**, which can hold many investments at once. That’s often simpler than trying to pick a few individual stocks.
+
+### A useful rule of thumb
+Diversification is about balancing:
+
+- **growth** potential
+- **risk**
+- **time horizon**
+- **need for access to the money**
+
+If you want, I can also explain:
+1. diversification in even simpler terms,
+2. diversification with a real-life analogy, or
+3. how a beginner might diversify using common account types.",9,273,1732,,gpt-5.4,2026-04-17_14-53-58,False
+governed,3,Prompt 1.3,What is the difference between risk tolerance and risk capacity?,"**Risk tolerance** is how much uncertainty or loss you can **emotionally handle**.
+
+**Risk capacity** is how much risk you can **financially afford** to take.
+
+### A simple way to separate them
+
+- **Tolerance = feelings and behavior**
+  - Will market swings make you panic?
+  - Can you stay invested during a downturn?
+  - Do you lose sleep when your balance drops?
+
+- **Capacity = facts and constraints**
+  - How long until you need the money?
+  - Do you have stable income and emergency savings?
+  - Would a large loss disrupt important goals?
+
+### Example
+Two people may both *want* high growth:
+
+- **Person A** is 30, has steady income, no near-term need for the money, and a strong emergency fund.  
+  - Likely **higher risk capacity**.
+
+- **Person B** is 62, retiring in 2 years, and will need the money soon.  
+  - Likely **lower risk capacity**, even if they say they are comfortable with risk.
+
+The reverse can also happen:
+- Someone may have **high capacity** but **low tolerance** if volatility makes them sell at the worst time.
+- Someone may have **high tolerance** but **low capacity** if they *like* risk but cannot afford major losses.
+
+### Why the distinction matters
+A sound plan usually has to respect **both**:
+- If you ignore **tolerance**, you may abandon the plan during stress.
+- If you ignore **capacity**, you may take risks that could damage important goals.
+
+### Practical rule
+Your investment risk level generally should not exceed the **lower** of:
+- what you can emotionally stick with, and
+- what your finances can withstand.
+
+If you want, I can also give you a quick 5-question test to help distinguish your own tolerance from your capacity.",10,261,1674,,gpt-5.4,2026-04-17_14-53-58,False

@@ -1,0 +1,105 @@
+mode,index,label,prompt,response,prompt_word_count,response_word_count,response_char_count,error,model,timestamp,dry_run
+governed,1,Prompt 1.1,"Explain the difference between saving, investing, and speculating.","They differ mainly in **purpose, time horizon, and risk of loss**.
+
+### Saving
+**Saving** is money you set aside for **stability and near-term use**.  
+Typical goals: emergency fund, upcoming bills, short-term purchases.
+
+- Priority: **preserve principal**
+- Time horizon: **short-term**
+- Risk: **low**
+- Tradeoff: safety and liquidity usually mean **lower returns**
+
+Examples: bank savings account, money market account, short-term cash reserves.
+
+### Investing
+**Investing** is committing money for **longer-term growth or income** with the expectation that value may fluctuate along the way.
+
+- Priority: **grow purchasing power over time**
+- Time horizon: **medium to long-term**
+- Risk: **moderate and variable**
+- Tradeoff: higher expected return usually comes with **volatility and uncertainty**
+
+Examples: diversified stock or bond funds, retirement accounts, broad market exposure.
+
+### Speculating
+**Speculating** is taking risk mainly to profit from **price movements, trends, or uncertain events**, often with less margin for error and less reliable long-term expectation.
+
+- Priority: **high upside**
+- Time horizon: often **shorter or event-driven**
+- Risk: **high**
+- Tradeoff: potential for large gains, but also **meaningful chance of loss**
+
+Examples: concentrated bets, short-term trading, meme stocks, many crypto trades, options used for directional bets.
+
+### A simple way to think about it
+- **Saving** protects money.
+- **Investing** grows money.
+- **Speculating** bets money.
+
+These can all have a place, but they should usually serve **different buckets** of your financial life. Money needed soon generally belongs in savings; long-term goals may fit investing; speculation, if used at all, should usually be limited to money you can afford to lose.
+
+If you want, I can also give you a quick framework for deciding which bucket a particular dollar should go into.",8,268,1891,,gpt-5.4,2026-04-17_16-46-45,False
+governed,2,Prompt 1.2,Explain diversification to someone who has never invested before.,"Diversification means **not putting all your money in one place**.
+
+If you buy just one investment and it does badly, your whole portfolio can suffer. If you spread your money across many investments, one weak area may hurt less because other parts may hold up better.
+
+A simple way to think about it:
+
+- **One company:** very concentrated risk  
+- **Many companies:** less dependence on any one company  
+- **Different types of investments:** less dependence on any one part of the market or economy
+
+For example, if all your money were in a single airline stock, bad news for that company or industry could hit you hard. If instead your money were spread across hundreds or thousands of companies, plus possibly different asset types, the damage from one problem is usually smaller.
+
+What diversification can help with:
+- reduces the risk of one investment ruining your results
+- smooths the ride somewhat
+- makes outcomes less dependent on a single bet
+
+What it does **not** do:
+- it does not eliminate risk
+- it does not guarantee profits
+- it does not prevent losses in a broad market decline
+
+For a beginner, the basic idea is: **own a broad mix rather than trying to guess one winner**.
+
+If helpful, I can also explain the difference between diversifying across **stocks, bonds, and cash** in plain language.",9,216,1315,,gpt-5.4,2026-04-17_16-46-45,False
+governed,3,Prompt 1.3,What is the difference between risk tolerance and risk capacity?,"They’re related, but not the same.
+
+- **Risk tolerance** = how much uncertainty or loss you can **emotionally and behaviorally handle**
+- **Risk capacity** = how much risk your finances can **actually afford to take**
+
+### A simple way to think about it
+
+**Risk tolerance** asks:
+- Will market swings keep you up at night?
+- Would you panic and sell after a 25% drop?
+- How comfortable are you with volatility?
+
+This is about **temperament**.
+
+**Risk capacity** asks:
+- How soon do you need the money?
+- Do you have stable income, emergency savings, or other assets?
+- Would a major loss derail an important goal?
+
+This is about **financial ability**.
+
+### Example
+Two people may both say they’re comfortable with risk.
+
+- A 28-year-old saving for retirement, with steady income and no near-term need for the money, may have **high risk capacity**
+- A 62-year-old planning to retire in 2 years may have **lower risk capacity**, even if they personally feel calm about market swings
+
+The reverse can also happen:
+- Someone young may have **high capacity** but **low tolerance** if volatility causes them to sell at the wrong time
+
+### Why the distinction matters
+A workable plan usually has to respect **both**:
+- If you exceed **tolerance**, you may abandon the plan
+- If you exceed **capacity**, a loss may do real damage
+
+So the prudent question isn’t just “How much risk can I stomach?” It’s also “How much risk can this goal safely bear?”
+
+If you want, I can also show how **risk need** fits alongside these two.",10,253,1516,,gpt-5.4,2026-04-17_16-46-45,False
