@@ -1,0 +1,45 @@
+metadata:
+  label: calibration_batch_04_seed42
+  description: Second config-driven calibration batch override
+  created_from: calibration_batch_03_seed42
+  notes: >
+    This file defines a measured refinement pass relative to the current base
+    parameter state and the Batch 03 tuning direction. The goal is to preserve
+    Batch 03 gains while making a second small improvement in repair dynamics,
+    context inflation control, and governed state-discipline behavior.
+
+run:
+  seed: 42
+  trials: 4000
+  outdir: simulation/outputs/calibration_batch_04_seed42
+
+overrides:
+  scenarios:
+    short_horizon_determinate:
+      repair_prob: 0.145
+      excess_context_prob: 0.105
+
+    long_horizon_workflow:
+      repair_prob: 0.25
+      excess_context_prob: 0.29
+      repeat_state_prob: 0.37
+
+    nonlinear_human_centered:
+      repair_prob: 0.30
+      excess_context_prob: 0.35
+      repeat_state_prob: 0.39
+
+  governance:
+    governed:
+      governance_overhead_mean: 38.0
+      compression_strength: 0.50
+      repair_reduction_strength: 0.54
+      context_filter_strength: 0.57
+      repeat_block_strength: 0.60
+
+  notes:
+    - Further small reduction in repair probability across scenarios.
+    - Further small reduction in excess-context probability across scenarios.
+    - Slight additional reduction in repeat-state carry-forward for long-horizon and nonlinear scenarios.
+    - Small governed-side increase in compression, repair reduction, context filtering, and repeat blocking.
+    - Governance overhead held constant to avoid eroding savings credibility while preserving non-zero governance cost.

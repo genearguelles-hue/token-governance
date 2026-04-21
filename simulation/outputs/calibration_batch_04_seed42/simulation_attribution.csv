@@ -1,0 +1,4 @@
+schema_version,batch_label,scenario,scenario_label,context_share_pct,output_share_pct,tool_share_pct,turn_share_pct
+v1,calibration_batch_04_seed42,short_horizon_determinate,short_horizon_determinate,66.81505496387072,15.985429341065768,6.004741459234807,11.1947742358287
+v1,calibration_batch_04_seed42,long_horizon_workflow,long_horizon_workflow,70.14562430561068,13.252271522534633,6.470631483021398,10.131472688833286
+v1,calibration_batch_04_seed42,nonlinear_human_centered,nonlinear_human_centered,70.43845234913542,13.93335336797555,5.51580415431276,10.11239012857627
